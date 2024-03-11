@@ -1,5 +1,4 @@
 #include <iostream>
-#include <string>
 using namespace std;
 struct Package
 {
@@ -9,6 +8,7 @@ struct Package
 
 struct Car
 {
+    int packagesNumber;
     int capacity;
     Package *packagesToPack;
 };
@@ -17,12 +17,13 @@ Car *cars;
 Package *packages;
 
 // function is refactoring string to Package struct
-void SortPackages(string P, string W, int n, Car &car)
+void SortPackages(string P, string W, int &n, Car &car)
 {
     packages = new Package[n];
     string *prices = new string[n];
     string *weights = new string[n];
     string temp;
+    car.packagesToPack = static_cast<Package *>(malloc(sizeof(Package) * n));
     int iterator = 0;
     for (int i = 0; i < P.size(); i++)
     {
@@ -54,10 +55,12 @@ void SortPackages(string P, string W, int n, Car &car)
     }
     for (int i = 0; i < n; i++)
     {
-        packages[i].price = stoi(prices[i]);
-        packages[i].weight = stoi(weights[i]);
+        // packages[i].price = stoi(prices[i]);
+        // packages[i].weight = stoi(weights[i]);
+        car.packagesNumber = n;
+        car.packagesToPack[i].price = stoi(prices[i]);
+        car.packagesToPack[i].weight = stoi(weights[i]);
     }
-    car.packagesToPack = packages;
 }
 
 void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoading)
@@ -66,15 +69,15 @@ void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoadin
     // reads car number
     getline(std::cin, line);
     carsNumber = std::stoi(line);
-    // reading number of packages
-    getline(cin, line);
-    n = stoi(line);
     // initialazing cars list
     cars = new Car[carsNumber];
     // initialazing packages list
     for (int i = 0; i < carsNumber; i++)
     {
         Car car;
+        // reading number of packages
+        getline(cin, line);
+        n = stoi(line);
 
         // reading packages prices
         getline(cin, line);
@@ -105,7 +108,13 @@ int main()
     ReadInput(carsNumber, n, P, W, maximumLoading);
     for (int i = 0; i < carsNumber; i++)
     {
-        cout << cars[i].capacity << cars[i].packagesToPack->price << endl;
+        Car car = cars[i];
+        int size = car.packagesNumber;
+        for (int j = 0; j < size; j++)
+        {
+            cout << car.capacity << " " << car.packagesToPack[j].price << " " << car.packagesToPack[j].weight << endl;
+        }
     }
+
     return 0;
 }
