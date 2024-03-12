@@ -14,12 +14,10 @@ struct Car
 };
 
 Car *cars;
-Package *packages;
 
 // function is refactoring string to Package struct
 void SortPackages(string P, string W, int &n, Car &car)
 {
-    packages = new Package[n];
     string *prices = new string[n];
     string *weights = new string[n];
     string temp;
@@ -55,12 +53,50 @@ void SortPackages(string P, string W, int &n, Car &car)
     }
     for (int i = 0; i < n; i++)
     {
-        // packages[i].price = stoi(prices[i]);
-        // packages[i].weight = stoi(weights[i]);
         car.packagesNumber = n;
         car.packagesToPack[i].price = stoi(prices[i]);
         car.packagesToPack[i].weight = stoi(weights[i]);
     }
+}
+
+void PackingPackages(int carsNumber, Car car)
+{
+    int mostValuablePackage = 0;
+    int filledCapacity = 0;
+    // cost of car packing
+    int money = -20;
+    int actualPrice = 0;
+    double mostValuableWeight = 0;
+    while (filledCapacity < car.capacity)
+    {
+        mostValuableWeight = 0;
+        for (int i = 0; i < car.packagesNumber; i++)
+        {
+            double pricePerWeight = double(car.packagesToPack[i].price) / double(car.packagesToPack[i].weight);
+            if (pricePerWeight >= mostValuableWeight)
+            {
+                mostValuableWeight = pricePerWeight;
+                mostValuablePackage = i;
+            }
+        }
+        if (car.packagesToPack[mostValuablePackage].weight > 100 &&
+            filledCapacity + car.packagesToPack[mostValuablePackage].weight < car.capacity)
+        {
+            money -= 5;
+        }
+        if (filledCapacity + car.packagesToPack[mostValuablePackage].weight > car.capacity)
+        {
+            break;
+        }
+        money += car.packagesToPack[mostValuablePackage].price;
+        filledCapacity += car.packagesToPack[mostValuablePackage].weight;
+        car.packagesToPack[mostValuablePackage].price = 0;
+    }
+    if (money < 0)
+    {
+        money = 0;
+    }
+    cout << money << endl;
 }
 
 void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoading)
@@ -108,13 +144,7 @@ int main()
     ReadInput(carsNumber, n, P, W, maximumLoading);
     for (int i = 0; i < carsNumber; i++)
     {
-        Car car = cars[i];
-        int size = car.packagesNumber;
-        for (int j = 0; j < size; j++)
-        {
-            cout << car.capacity << " " << car.packagesToPack[j].price << " " << car.packagesToPack[j].weight << endl;
-        }
+        PackingPackages(carsNumber, cars[i]);
     }
-
     return 0;
 }
