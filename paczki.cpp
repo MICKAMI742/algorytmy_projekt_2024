@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 using namespace std;
 struct Package
 {
@@ -67,7 +68,8 @@ void PackingPackages(int carsNumber, Car car)
     int money = -20;
     int actualPrice = 0;
     double mostValuableWeight = 0;
-    while (filledCapacity < car.capacity)
+    int temp = 0;
+    while (filledCapacity <= car.capacity)
     {
         mostValuableWeight = 0;
         for (int i = 0; i < car.packagesNumber; i++)
@@ -80,7 +82,7 @@ void PackingPackages(int carsNumber, Car car)
             }
         }
         if (car.packagesToPack[mostValuablePackage].weight > 100 &&
-            filledCapacity + car.packagesToPack[mostValuablePackage].weight < car.capacity)
+            filledCapacity + car.packagesToPack[mostValuablePackage].weight <= car.capacity)
         {
             money -= 5;
         }
@@ -91,6 +93,12 @@ void PackingPackages(int carsNumber, Car car)
         money += car.packagesToPack[mostValuablePackage].price;
         filledCapacity += car.packagesToPack[mostValuablePackage].weight;
         car.packagesToPack[mostValuablePackage].price = 0;
+        car.packagesToPack[mostValuablePackage].weight = 1;
+        temp++;
+        if (temp == car.packagesNumber)
+        {
+            break;
+        }
     }
     if (money < 0)
     {
