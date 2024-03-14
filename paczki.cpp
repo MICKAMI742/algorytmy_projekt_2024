@@ -14,8 +14,6 @@ struct Car
     Package *packagesToPack;
 };
 
-Car *cars;
-
 // function is refactoring string to Package struct
 void SortPackages(string P, string W, int &n, Car &car)
 {
@@ -23,6 +21,7 @@ void SortPackages(string P, string W, int &n, Car &car)
     string *weights = new string[n];
     string temp;
     car.packagesToPack = static_cast<Package *>(malloc(sizeof(Package) * n));
+    car.packagesNumber = n;
     int iterator = 0;
     for (int i = 0; i < P.size(); i++)
     {
@@ -54,60 +53,94 @@ void SortPackages(string P, string W, int &n, Car &car)
     }
     for (int i = 0; i < n; i++)
     {
-        car.packagesNumber = n;
         car.packagesToPack[i].price = stoi(prices[i]);
         car.packagesToPack[i].weight = stoi(weights[i]);
     }
+    delete[] prices;
+    delete[] weights;
 }
 
-void PackingPackages(int carsNumber, Car car)
+// void PackingPackages(int carsNumber, Car &car)
+// {
+//     int mostValuablePackage = 0;
+//     int filledCapacity = 0;
+//     // cost of car packing
+//     int money = -20;
+//     double mostValuableWeight = 0;
+//     while (filledCapacity <= car.capacity)
+//     {
+//         mostValuableWeight = 0;
+//         for (int i = 0; i < car.packagesNumber; i++)
+//         {
+//             double pricePerWeight = static_cast<double>(car.packagesToPack[i].price) * static_cast<double>(car.packagesToPack[i].weight);
+//             if (pricePerWeight > mostValuableWeight)
+//             {
+//                 mostValuableWeight = pricePerWeight;
+//                 mostValuablePackage = i;
+//                 if (car.packagesToPack[i].price > car.packagesToPack[mostValuablePackage].price)
+//                 {
+//                     mostValuablePackage = i;
+//                 }
+//             }
+//         }
+//         if (car.packagesToPack[mostValuablePackage].weight > 100 &&
+//             filledCapacity + car.packagesToPack[mostValuablePackage].weight <= car.capacity)
+//         {
+//             money -= 5;
+//         }
+//         if (filledCapacity + car.packagesToPack[mostValuablePackage].weight > car.capacity)
+//         {
+//             car.packagesToPack[mostValuablePackage].price = 0;
+//         }
+//         money += car.packagesToPack[mostValuablePackage].price;
+//         filledCapacity += car.packagesToPack[mostValuablePackage].weight;
+//         car.packagesToPack[mostValuablePackage].price = 0;
+//         car.packagesToPack[mostValuablePackage].weight = 1;
+//     }
+//     if (money < 0)
+//     {
+//         money = 0;
+//     }
+//     cout << money << endl;
+// }
+int PackingPackages(Car &car)
 {
-    int mostValuablePackage = 0;
-    int filledCapacity = 0;
-    // cost of car packing
     int money = -20;
-    int actualPrice = 0;
-    double mostValuableWeight = 0;
-    int temp = 0;
-    while (filledCapacity <= car.capacity)
+    // sort by prices
+    for (int i = 0; i < car.packagesNumber - 1; i++)
     {
-        mostValuableWeight = 0;
-        for (int i = 0; i < car.packagesNumber; i++)
+        for (int j = 0; j < car.packagesNumber - i - 1; j++)
         {
-            double pricePerWeight = double(car.packagesToPack[i].price) / double(car.packagesToPack[i].weight);
-            if (pricePerWeight >= mostValuableWeight)
+            if (car.packagesToPack[j].price < car.packagesToPack[j + 1].price)
             {
-                mostValuableWeight = pricePerWeight;
-                mostValuablePackage = i;
+                // Swap packages
+                Package temp = car.packagesToPack[j];
+                car.packagesToPack[j] = car.packagesToPack[j + 1];
+                car.packagesToPack[j + 1] = temp;
             }
         }
-        if (car.packagesToPack[mostValuablePackage].weight > 100 &&
-            filledCapacity + car.packagesToPack[mostValuablePackage].weight <= car.capacity)
+    }
+    int actualWeight = car.capacity;
+    for (int i = 0; i < car.packagesNumber; i++)
+    {
+        if (car.packagesToPack[i].weight <= actualWeight)
         {
-            money -= 5;
-        }
-        if (filledCapacity + car.packagesToPack[mostValuablePackage].weight > car.capacity)
-        {
-            break;
-        }
-        money += car.packagesToPack[mostValuablePackage].price;
-        filledCapacity += car.packagesToPack[mostValuablePackage].weight;
-        car.packagesToPack[mostValuablePackage].price = 0;
-        car.packagesToPack[mostValuablePackage].weight = 1;
-        temp++;
-        if (temp == car.packagesNumber)
-        {
-            break;
+            money += car.packagesToPack[i].price;
+            if (car.packagesToPack[i].weight > 100)
+            {
+                money -= 5;
+            }
+            actualWeight -= car.packagesToPack[i].weight;
         }
     }
     if (money < 0)
     {
         money = 0;
     }
-    cout << money << endl;
+    return money;
 }
 
-void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoading)
+void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoading, Car *&cars)
 {
     string line;
     // reads car number
@@ -149,10 +182,11 @@ int main()
     string P;
     string W;
     int maximumLoading;
-    ReadInput(carsNumber, n, P, W, maximumLoading);
+    Car *cars;
+    ReadInput(carsNumber, n, P, W, maximumLoading, cars);
     for (int i = 0; i < carsNumber; i++)
     {
-        PackingPackages(carsNumber, cars[i]);
+        cout << PackingPackages(cars[i]) << endl;
     }
     return 0;
 }
