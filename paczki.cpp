@@ -1,10 +1,13 @@
 #include <iostream>
 #include <string>
+
 using namespace std;
+
 struct Package
 {
     int price;
     int weight;
+    double ratio;
 };
 
 struct Car
@@ -15,7 +18,7 @@ struct Car
 };
 
 // function is refactoring string to Package struct
-void SortPackages(string P, string W, int &n, Car &car)
+void ParsePackages(string P, string W, int &n, Car &car)
 {
     string *prices = new string[n];
     string *weights = new string[n];
@@ -55,6 +58,7 @@ void SortPackages(string P, string W, int &n, Car &car)
     {
         car.packagesToPack[i].price = stoi(prices[i]);
         car.packagesToPack[i].weight = stoi(weights[i]);
+        car.packagesToPack[i].ratio = static_cast<double>(car.packagesToPack[i].price) / static_cast<double>(car.packagesToPack[i].weight);
     }
     delete[] prices;
     delete[] weights;
@@ -103,6 +107,7 @@ void SortPackages(string P, string W, int &n, Car &car)
 //     }
 //     cout << money << endl;
 // }
+
 int PackingPackages(Car &car)
 {
     int money = -20;
@@ -120,6 +125,22 @@ int PackingPackages(Car &car)
             }
         }
     }
+
+    for (int i = 1; i < car.packagesNumber; i++)
+    {
+        if (car.packagesToPack[i].price == car.packagesToPack[i - 1].price)
+        {
+            double ratioPrev = static_cast<double>(car.packagesToPack[i - 1].price) / static_cast<double>(car.packagesToPack[i - 1].weight);
+            double ratioCurr = static_cast<double>(car.packagesToPack[i].price) / static_cast<double>(car.packagesToPack[i].weight);
+            if (ratioPrev < ratioCurr)
+            {
+                Package temp = car.packagesToPack[i];
+                car.packagesToPack[i] = car.packagesToPack[i - 1];
+                car.packagesToPack[i - 1] = temp;
+            }
+        }
+    }
+
     int actualWeight = car.capacity;
     for (int i = 0; i < car.packagesNumber; i++)
     {
@@ -164,7 +185,7 @@ void ReadInput(int &carsNumber, int &n, string &P, string &W, int &maximumLoadin
         getline(cin, line);
         W = line + " ";
 
-        SortPackages(P, W, n, car);
+        ParsePackages(P, W, n, car);
 
         // reading maximal loading
         getline(cin, line);
