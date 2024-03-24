@@ -3,6 +3,21 @@
 
 using namespace std;
 
+class Node
+{
+public:
+    int value;
+    vector<Node *> children;
+    Node(int value)
+    {
+        this->value = value;
+    }
+    void AddChild(Node *child)
+    {
+        children.push_back(child);
+    }
+};
+
 struct Tree
 {
     int w;
@@ -29,34 +44,63 @@ void ReadInput(int &n, int &w, vector<Tree> &arrayOfTrees)
             arrayOfTrees[i].adjacencyMatrix.push_back(row);
         }
     }
-}
 
-int IsBanana(int &numberOfBananas, Tree tree)
-{
-    int numberOfNeighbours = 0;
-    vector<int> neighbours;
-    for (int i = 0; i < tree.w; i++)
+    vector<Node> nodes;
+    for (int i = 0; i < w; i++)
     {
-        numberOfNeighbours = 0;
-        for (int j = 0; j < tree.w; j++)
+        Node node(i + 1);
+        nodes.push_back(node);
+    }
+    for (auto tree : arrayOfTrees)
+    {
+        for (int i = 0; i < tree.w; i++)
         {
-            if (tree.adjacencyMatrix[i][j] == "1")
+            for (int j = 0; j < tree.w; j++)
             {
-                numberOfNeighbours++;
+                if (tree.adjacencyMatrix[i][j] == "1")
+                {
+                    nodes[i].AddChild(&nodes[j]);
+                }
             }
         }
-        neighbours.push_back(numberOfNeighbours);
     }
-    for (auto neighbour : neighbours)
+    for (auto node : nodes)
     {
-        if (neighbour == 1)
+        cout << node.value << " ";
+        for (auto child : node.children)
         {
-            numberOfBananas++;
+            cout << child->value << " ";
         }
+        cout << endl;
     }
-
-    return numberOfBananas;
 }
+
+// int IsBanana(int &numberOfBananas, Tree tree)
+// {
+//     int numberOfNeighbours = 0;
+//     vector<int> neighbours;
+//     for (int i = 0; i < tree.w; i++)
+//     {
+//         numberOfNeighbours = 0;
+//         for (int j = 0; j < tree.w; j++)
+//         {
+//             if (tree.adjacencyMatrix[i][j] == "1")
+//             {
+//                 numberOfNeighbours++;
+//             }
+//         }
+//         neighbours.push_back(numberOfNeighbours);
+//     }
+//     for (auto neighbour : neighbours)
+//     {
+//         if (neighbour == 1)
+//         {
+//             numberOfBananas++;
+//         }
+//     }
+
+//     return numberOfBananas;
+// }
 
 int main()
 {
@@ -65,10 +109,10 @@ int main()
     vector<Tree> arrayOfTrees; // array of trees
     int numberOfBananas = 0;   // number of bananas
     ReadInput(n, w, arrayOfTrees);
-    for (auto tree : arrayOfTrees)
-    {
-        cout << IsBanana(numberOfBananas, tree) << " bananas" << endl;
-        numberOfBananas = 0;
-    }
+    // for (auto tree : arrayOfTrees)
+    // {
+    //     cout << IsBanana(numberOfBananas, tree) << " bananas" << endl;
+    //     numberOfBananas = 0;
+    // }
     return 0;
 }
