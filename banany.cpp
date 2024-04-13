@@ -64,13 +64,17 @@ void ReadInput(int &n, int &w, vector<Tree> &arrayOfTrees)
             }
         }
     }
+    int neighbours = 0;
     for (auto node : nodes)
     {
         cout << node.value << " ";
+        neighbours = 0;
         for (auto child : node.children)
         {
             cout << child->value << " ";
+            neighbours++;
         }
+        cout << "neighbours: " << neighbours;
         cout << endl;
     }
 }
