@@ -48,18 +48,11 @@ bool isBranch(string charList, string output, int w)
     int multiplier = 0;
     for (int i = 0; i < charList.length(); i++)
     {
-        if (charList[i] == '1')
+        if (w == 2 && output[0] == output[1])
         {
-            if (i >= w)
-            {
-                positionsCharList += to_string(i - (w * multiplier));
-            }
-            else
-            {
-                positionsCharList += to_string(i);
-            }
+            return true;
         }
-        if (iterator == w)
+        if (i % w == w - 1)
         {
             if (positionsCharList == positionsOutput)
             {
@@ -77,6 +70,17 @@ bool isBranch(string charList, string output, int w)
             positionsCharList = "";
             iterator = 0;
             multiplier++;
+        }
+        if (charList[i] == '1')
+        {
+            if (i >= w)
+            {
+                positionsCharList += to_string(i - (w * multiplier));
+            }
+            else
+            {
+                positionsCharList += to_string(i);
+            }
         }
         iterator++;
     }
