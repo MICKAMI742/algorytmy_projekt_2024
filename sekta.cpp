@@ -8,17 +8,6 @@ struct Problem
     int k; // a person which will die k-th
 };
 
-// it will return the position of the person which will die k-th
-// vector<int> WhosGonnaDieAtCurrentPos(vector<int> arrayOfPeople, int i, int k)
-// {
-//     if (i / 2 == k)
-//     {
-//         return arrayOfPeople;
-//     }
-//     arrayOfPeople.erase(arrayOfPeople.begin() + i);
-//     return WhosGonnaDieAtCurrentPos(arrayOfPeople, i + 2, k);
-// }
-
 void WhosGonnaDieAtCurrentPos(vector<int> arrayOfPeople, int i, int k)
 {
     int whichDies = 0;

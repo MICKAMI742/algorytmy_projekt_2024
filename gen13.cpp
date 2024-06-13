@@ -3,7 +3,7 @@
 #include <vector>
 using namespace std;
 
-int getNumberFromChar(char c)
+int ChangeCode(char c)
 {
     switch (c)
     {
@@ -38,70 +38,91 @@ int getNumberFromChar(char c)
     }
 }
 
-string codeDigits = "0123456789abc";
+string thirteenCode = "0123456789abc";
+vector<string> result;
 
-string generateEvenPalindromes(int actualN, int n, string modifablePalindrome)
+void GenerateSubPalindromes(int length, string actual, vector<string> &result)
 {
-    if (actualN >= n)
-    {
-        int sum = 0;
-        string help;
-        for (auto c : modifablePalindrome)
-        {
-            sum += getNumberFromChar(c);
-            help += c;
-            if (sum % 2 == 0 && help.length() == n)
-            {
-                cout << help;
-                help = "";
-            }
-        }
-        return "";
-    }
 
-    if (n == 2)
+    if (length == 0)
     {
-        for (int i = 0; i < codeDigits.length(); i++)
+        result.push_back(actual);
+        return;
+    }
+    for (int i = 0; i < thirteenCode.length(); i++)
+    {
+        char c = thirteenCode[i];
+        GenerateSubPalindromes(length - 1, actual + c, result);
+    }
+}
+
+vector<string> GeneratePalindromes(int length)
+{
+    vector<string> palindromList;
+    if (length == 0)
+    {
+        return palindromList;
+    }
+    if (length == 1)
+    {
+        for (auto c : thirteenCode)
         {
-            cout << string(1, codeDigits[i]) + string(1, codeDigits[i]);
+            palindromList.push_back(string(1, c));
         }
-        return "";
+        return palindromList;
+    }
+    int halfLength = length / 2;
+    vector<string> subPalindromes;
+    GenerateSubPalindromes(halfLength, "", subPalindromes);
+    if (length % 2 == 0)
+    {
+        for (auto sub : subPalindromes)
+        {
+            string palindrom = sub + string(sub.rbegin(), sub.rend());
+            palindromList.push_back(palindrom);
+        }
     }
     else
     {
-        int digitsNumber = codeDigits.length();
-        for (int i = 0; i < digitsNumber; i++)
+        for (auto sub : subPalindromes)
         {
-            generateEvenPalindromes(actualN + 2, n, (modifablePalindrome + codeDigits[i] + modifablePalindrome));
+            for (auto c : thirteenCode)
+            {
+                string palindrom = sub + c + string(sub.rbegin(), sub.rend());
+                palindromList.push_back(palindrom);
+            }
         }
-        return "";
     }
+    return palindromList;
 }
 
 int main()
 {
     int linesNumber;
     cin >> linesNumber;
-    int *stringLengthList = new int[linesNumber];
+    vector<int> stringLengthList;
     for (int i = 0; i < linesNumber; i++)
     {
         int n;
         cin >> n;
-        stringLengthList[i] = n;
+        stringLengthList.push_back(n);
     }
-
-    for (int i = 0; i < linesNumber; i++)
+    for (auto i : stringLengthList)
     {
-        for (int j = 0; j < codeDigits.length(); j++)
+        vector<string> palindromList = GeneratePalindromes(i);
+        for (auto palindrom : palindromList)
         {
-            generateEvenPalindromes(1, stringLengthList[i], string(1, codeDigits[j]));
-            if (stringLengthList[i] == 2)
+            int sum = 0;
+            for (auto c : palindrom)
             {
-                break;
+                sum += ChangeCode(c);
+            }
+            if (sum % 2 == 0)
+            {
+                cout << palindrom;
             }
         }
         cout << endl;
     }
-    delete[] stringLengthList;
     return 0;
 }
